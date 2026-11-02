@@ -61,10 +61,12 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = '';
 
-  movements.forEach(function (mov, i) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `
@@ -98,7 +100,7 @@ const calcDisplaySummary = function (acc) {
     .filter(mov => mov > 0)
     .map(deposit => (deposit * acc.interestRate) / 100)
     .filter((int, i, arr) => {
-      console.log(arr);
+      // console.log(arr);
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
@@ -137,7 +139,7 @@ btnLogin.addEventListener('click', function (e) {
   currentAccount = accounts.find(
     acc => acc.username === inputLoginUsername.value,
   );
-  console.log(currentAccount);
+  // console.log(currentAccount);
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     // Display UI and message
@@ -219,128 +221,17 @@ btnLoan.addEventListener('click', function (e) {
   inputLoanAmount.blur();
 });
 
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
-
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-/////////////////////////////////////////////////
-// Simple Array Methods
-
-console.log(movements);
-const deposits = movements.filter(mov => mov > 0);
-console.log(deposits);
-
-const withdrawals = movements.filter(mov => mov < 0);
-console.log(withdrawals);
-
-// accumulator -> SNOWBALL
-const balance = movements.reduce((acc, cur) => acc + cur, 0);
-console.log(balance);
-
-// Maximum value
-const max = movements.reduce((acc, mov) => {
-  if (acc > mov) return acc;
-  else return mov;
-}, movements[0]);
-console.log(max);
-
-// Challenge...
-
-const breeds = [
-  {
-    breed: 'German Shepherd',
-    averageWeight: 32,
-    activities: ['fetch', 'swimming'],
-  },
-  {
-    breed: 'Dalmatian',
-    averageWeight: 24,
-    activities: ['running', 'fetch', 'agility'],
-  },
-  {
-    breed: 'Labrador',
-    averageWeight: 28,
-    activities: ['swimming', 'fetch'],
-  },
-  {
-    breed: 'Beagle',
-    averageWeight: 12,
-    activities: ['digging', 'fetch'],
-  },
-  {
-    breed: 'Husky',
-    averageWeight: 26,
-    activities: ['running', 'agility', 'swimming'],
-  },
-  {
-    breed: 'Bulldog',
-    averageWeight: 36,
-    activities: ['sleeping'],
-  },
-  {
-    breed: 'Poodle',
-    averageWeight: 18,
-    activities: ['agility', 'fetch'],
-  },
-];
-
-// 1.
-const huskyWeight = breeds.find(dog => dog.breed === 'Husky').averageWeight;
-
-console.log(huskyWeight);
-
-// 2.
-const dogBothActivities = breeds.find(
-  dog => dog.activities.includes('running') && dog.activities.includes('fetch'),
-).breed;
-
-console.log(dogBothActivities);
-
-// 3.
-const allActivities = breeds.flatMap(dog => dog.activities);
-
-console.log(allActivities);
-
-// 4.
-const uniqueActivities = [...new Set(allActivities)];
-
-console.log(uniqueActivities);
-
-// 5.
-const swimmingAdjacent = [
-  ...new Set(
-    breeds
-      .filter(dog => dog.activities.includes('swimming'))
-      .flatMap(dog => dog.activities),
-  ),
-].filter(act => act !== 'swimming');
-
-console.log(swimmingAdjacent);
-
-// 6.
-const weightCheck = breeds.every(dog => dog.averageWeight >= 10);
-
-console.log(weightCheck);
-
-// 7.
-const activeDog = breeds.some(dog => dog.activities.length >= 3);
-
-console.log(activeDog);
-
-// Bonus...
-
-const averageWeightHeaviestFetchingDog = Math.max(
-  ...breeds
-    .filter(dog => dog.activities.includes('fetch'))
-    .map(dog => dog.averageWeight),
-);
-
-console.log(averageWeightHeaviestFetchingDog);
+////////////////////////////////////////
