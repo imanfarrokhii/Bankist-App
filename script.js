@@ -235,3 +235,78 @@ btnSort.addEventListener('click', function (e) {
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 ////////////////////////////////////////
+// Challenge...
+
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John', 'Leo'] },
+  { weight: 18, curFood: 244, owners: ['Joe'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+];
+
+// recommendedFood (g) = weight (kg) ** 0.75 * 28, Eating too much => curFood > recommendedFood, Eating ok => curFood > -10% rec & < +10% rec
+
+// Eating behavior calculation:
+const eatingBehav = dog => {
+  if (dog.curFood >= dog.recFood * 0.9 && dog.curFood <= dog.recFood * 1.1)
+    return 'OK';
+  else if (dog.curFood > dog.recFood) return 'Too much';
+  else return 'Too little';
+};
+
+// 1.
+dogs.forEach(dog => (dog.recFood = Math.floor(dog.weight ** 0.75 * 28)));
+console.log(dogs);
+
+// 2.
+const sarahDog = dogs.find(dog => dog.owners.includes('Sarah'));
+console.log(`Sarah's dog is eating ${eatingBehav(sarahDog)}`);
+
+// 3.
+const ownersTooMuch = dogs
+  .filter(dog => eatingBehav(dog) === 'Too much')
+  .flatMap(dog => dog.owners);
+console.log(ownersTooMuch);
+
+const ownersTooLittle = dogs
+  .filter(dog => eatingBehav(dog) === 'Too little')
+  .flatMap(dog => dog.owners);
+console.log(ownersTooLittle);
+
+// 4.
+console.log(
+  `${ownersTooMuch.slice(0, -1).join(', ') + ' and ' + ownersTooMuch.at(-1)}'s dogs eat too much!`,
+);
+console.log(
+  `${ownersTooLittle.slice(0, -1).join(', ') + ' and ' + ownersTooLittle.at(-1)}'s dogs eat too little!`,
+);
+
+// 5.
+console.log(dogs.some(dog => dog.curFood === dog.recFood));
+
+// 6.
+console.log(dogs.every(dog => eatingBehav(dog) === 'OK'));
+
+// 7.
+const dogsOk = dogs.filter(dog => eatingBehav(dog) === 'OK');
+console.log(dogsOk);
+
+// 8.
+const dogsGroupedByPortion = Object.groupBy(dogs, dog => {
+  if (eatingBehav(dog) === 'Too much') return 'too-much';
+  else if (eatingBehav(dog) === 'Too little') return 'too-little';
+  else return 'exact';
+});
+console.log(dogsGroupedByPortion);
+
+// 9.
+const dogsGroupedByOwners = Object.groupBy(
+  dogs,
+  dog => `${dog.owners.length}-owner`,
+);
+console.log(dogsGroupedByOwners);
+
+// 10.
+const dogsSorted = dogs.toSorted((a, b) => a.recFood - b.recFood);
+console.log(dogsSorted);
